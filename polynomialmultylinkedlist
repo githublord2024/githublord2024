@@ -1,0 +1,120 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Term {
+    int coeff;
+    int exp;
+    struct Term* next;
+} Term;
+
+Term* createTerm(int coeff, int exp) {
+    Term* newTerm = (Term*)malloc(sizeof(Term));
+    newTerm->coeff = coeff;
+    newTerm->exp = exp;
+    newTerm->next = NULL;
+    return newTerm;
+}
+
+void insertTerm(Term** head, int coeff, int exp) {
+    Term* newTerm = createTerm(coeff, exp);
+    if (*head == NULL || (*head)->exp < exp) {
+        newTerm->next = *head;
+        *head = newTerm;
+    } else {
+        Term* current = *head;
+        Term* prev = NULL;
+
+       
+        while (current != NULL && current->exp >= exp) {
+          
+            if (current->exp == exp) {
+                current->coeff += coeff;
+                free(newTerm); 
+                return;
+            }
+            prev = current;
+            current = current->next;
+        }
+
+        newTerm->next = current;
+        if (prev != NULL) {
+            prev->next = newTerm;
+        } else {
+            *head = newTerm; 
+        }
+    }
+}
+
+Term* multiplyPolynomials(Term* poly1, Term* poly2) {
+    Term* result = NULL;
+
+    for (Term* t1 = poly1; t1 != NULL; t1 = t1->next) {
+        for (Term* t2 = poly2; t2 != NULL; t2 = t2->next) {
+            int coeff = t1->coeff * t2->coeff;
+            int exp = t1->exp + t2->exp;
+            insertTerm(&result, coeff, exp); 
+        }
+    }
+
+    return result;
+}
+
+void printPolynomial(Term* poly) {
+    if (poly == NULL) {
+        printf("0");
+        return;
+    }
+    Term* current = poly;
+    while (current != NULL) {
+        if (current->coeff >= 0 && current != poly) {
+            printf(" + ");
+        }
+        printf("%d x^%d", current->coeff, current->exp);
+        current = current->next;
+    }
+    printf("\n");
+}
+
+void freePolynomial(Term* poly) {
+    while (poly != NULL) {
+        Term* next = poly->next;
+        free(poly);
+        poly = next;
+    }
+}
+
+int main() {
+    Term* poly1 = NULL;
+    Term* poly2 = NULL;
+
+    int size1, size2;
+    printf("Enter the number of terms in the first polynomial: ");
+    scanf("%d", &size1);
+    printf("Enter the coefficients and exponents of the first polynomial:\n");
+    for (int i = 0; i < size1; i++) {
+        int coeff, exp;
+        printf("Term %d (coefficient exponent): ", i + 1);
+        scanf("%d %d", &coeff, &exp);
+        insertTerm(&poly1, coeff, exp);
+    }
+
+    printf("Enter the number of terms in the second polynomial: ");
+    scanf("%d", &size2);
+    printf("Enter the coefficients and exponents of the second polynomial:\n");
+    for (int i = 0; i < size2; i++) {
+        int coeff, exp;
+        printf("Term %d (coefficient exponent): ", i + 1);
+        scanf("%d %d", &coeff, &exp);
+        insertTerm(&poly2, coeff, exp);
+    }
+
+    Term* result = multiplyPolynomials(poly1, poly2);
+    printf("Resultant Polynomial: ");
+    printPolynomial(result);
+
+    freePolynomial(poly1);
+    freePolynomial(poly2);
+    freePolynomial(result);
+
+    return 0;
+}
