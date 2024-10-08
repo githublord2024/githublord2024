@@ -1,0 +1,107 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct tree {
+    int data; 
+    struct tree* lchild;
+    struct tree* rchild;
+};
+
+struct tree* newNode(int data) {
+    struct tree* node = (struct tree*)malloc(sizeof(struct tree));
+    node->lchild = NULL;
+    node->rchild = NULL;
+    node->data = data;
+    return node;
+}
+
+struct tree* nullNode() {
+    struct tree* nullNode = (struct tree*)malloc(sizeof(struct tree));
+    nullNode->lchild = NULL;
+    nullNode->rchild = NULL;
+    nullNode->data = 0; 
+    return nullNode;
+}
+
+void inorder(struct tree* ptr) {
+    if (ptr != NULL) {
+        inorder(ptr->lchild);
+        printf("%d ", ptr->data); 
+        inorder(ptr->rchild);
+    }
+}
+
+void preorder(struct tree* ptr) {
+    if (ptr != NULL) {
+        printf("%d ", ptr->data); 
+        preorder(ptr->lchild);
+        preorder(ptr->rchild);
+    }
+}
+
+void postorder(struct tree* ptr) {
+    if (ptr != NULL) {
+        postorder(ptr->lchild);
+        postorder(ptr->rchild);
+        printf("%d ", ptr->data);
+    }
+}
+
+void insertTree(struct tree* ptr) {
+    int data;
+    int choice;
+
+    printf("Enter data for this node:\n");
+    scanf("%d", &data); 
+    ptr->data = data; 
+
+
+    printf("Does %d have a left child? (1 for Yes, 0 for No): ", ptr->data);
+    scanf("%d", &choice);
+    if (choice == 1) {
+        ptr->lchild = nullNode();
+        insertTree(ptr->lchild);
+    }
+
+
+    printf("Does %d have a right child? (1 for Yes, 0 for No): ", ptr->data);
+    scanf("%d", &choice);
+    if (choice == 1) {
+        ptr->rchild = nullNode();
+        insertTree(ptr->rchild);
+    }
+}
+
+int main() {
+    int g;
+    struct tree* root = nullNode();
+    printf("Enter the root data for the Expression:\n");
+    insertTree(root);
+    
+    while (1) {
+        printf("\n1. InOrder   2. PreOrder   3. PostOrder   4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &g);
+        switch (g) {
+            case 1: 
+                printf("InOrder Traversal: ");
+                inorder(root); 
+                break;
+            case 2: 
+                printf("PreOrder Traversal: ");
+                preorder(root); 
+                break;
+            case 3: 
+                printf("PostOrder Traversal: ");
+                postorder(root); 
+                break;
+            case 4: 
+                exit(0); 
+                break;
+            default: 
+                printf("Invalid choice! Please try again.\n"); 
+                break;
+        }
+    }
+    return 0;
+}
